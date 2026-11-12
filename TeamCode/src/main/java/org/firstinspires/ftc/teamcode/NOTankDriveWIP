@@ -59,10 +59,16 @@ public class TankDrive extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive = null;
     private DcMotor rightDrive = null;
-  
+    private DcMotor AWheel = null;
+    private DcMotor BWheel = null;
+    private DcMotor CWheel = null;
+    private DcMotor DWheel = null;
+
     private Servo parcelSpinner;
     public final static double parcelHome = 0;
     double parcelPosition = parcelHome; //the servo's position
+
+    double BPowerVar = 0.59;
 
     @Override
     public void runOpMode() {
@@ -74,7 +80,10 @@ public class TankDrive extends LinearOpMode {
         // step (using the FTC Robot Controller app on the phone).
         leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
         rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
-       
+        AWheel = hardwareMap.get(DcMotor.class, "AWheel");
+        BWheel = hardwareMap.get(DcMotor.class, "BWheel");
+        CWheel = hardwareMap.get(DcMotor.class, "CWheel");
+        DWheel = hardwareMap.get(DcMotor.class, "DWheel")
         //parcelSpinner = hardwareMap.get(Servo.class, "parcel_spinner");
 
         //parcelSpinner.setPosition(parcelPosition);
@@ -84,6 +93,10 @@ public class TankDrive extends LinearOpMode {
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
         leftDrive.setDirection(DcMotor.Direction.FORWARD);
         rightDrive.setDirection(DcMotor.Direction.REVERSE);
+        AWheel.setDirection(DcMotor.Direction.FORWARD);
+        BWheel.setDirection(DcMotor.Direction.FORWARD);
+        CWheel.setDirection(DcMotor.Direction.FORWARD);
+        DWheel.setDirection(DcMotor.Direction.FORWARD);
 
         // Wait for the game to start (driver presses START)
         waitForStart();
@@ -98,7 +111,11 @@ public class TankDrive extends LinearOpMode {
             // Setup a variable for each drive wheel to save power level for telemetry
             double leftPower;
             double rightPower;
-           
+            double APower;
+            double BPower = BPowerVar;
+            double CPower;
+            double DPower;
+
             // Choose to drive using either Tank Mode, or POV Mode
             // Comment out the method that's not used.  The default below is POV.
 
@@ -109,7 +126,21 @@ public class TankDrive extends LinearOpMode {
             //double flyPower = 0;
             //double hopperPower = 0;
 
-
+            if (gamepad1.right_trigger > 0.1) {
+                APower = 1;
+            }
+            if (gamepad1.left_trigger > 0.1){
+                BPower = 0.775;
+            }
+            else if (gamepad1.left_bumper) {
+                BPower = -0.5;
+            }
+            if (gamepad1.x) {
+                CPower = 1;
+            } 
+            if (gamepad1.a) {
+                DPower = 1;
+            }
             //if(gamepad1.dpad_down && flyPowerVar>0) {
             //    flyPowerVar -= 0.0025;
             //}
@@ -127,14 +158,20 @@ public class TankDrive extends LinearOpMode {
             // Send calculated power to wheels
             leftDrive.setPower(leftPower);
             rightDrive.setPower(rightPower);
-            
-           
+            AWheel.setPower(APower);
+            BWheel.setPower(BPower);
+            CWheel.setpower(CPower);
+            DWheel.setpower(DPower);
             //parcelSpinner.setPower(parcelPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
-
+            telemetry.addData("A Wheel that does something", "%.2f", APower);
+            telemetry.addData("B Wheel that does something else", "%.2f", BPower);
+            telemetry.addData("B Wheels helping power, it does something", "%.2f", BPowerVar);
+            telemetry.addData("C Wheel that does another another thing", "%.2f", CPower);
+            telemetry.addData("D Wheel that does another another another thing", "%.2f", DPower);
             telemetry.update();
         }
     }
